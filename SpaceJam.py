@@ -28,7 +28,6 @@ class MyApp(ShowBase):
         self.accept('escape', self.quit)  ## Esc to escape
         self.setupScene()
         self.setCamera()
-        #self.enableHUD()
 
         self.pusher.addCollider(self.player.collisionNode, self.player.modelNode)       # adds collider to player, the from object in this scenario
         self.cTrav.addCollider(self.player.collisionNode, self.pusher)                  # allows player collider to be interacted with by other objects by pushing
@@ -104,8 +103,6 @@ class MyApp(ShowBase):
         self.camera.setFluidPos(0, 0, 0)              # self.camera.setFluidPos(0, -90, 0) gives 3rd person POV, collision is attached to camera, not ship
         self.camera.setHpr(0, 0, 0)
     
-
-
     def quit(self):
         sys.exit()
 
