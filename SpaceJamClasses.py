@@ -13,7 +13,7 @@ from CollideObjectBase import InverseSphereCollideObject, CapsuleCollidableObjec
 from direct.gui.OnscreenImage import OnscreenImage
 
 # --------------------------------------- Programmer controls ------------------------------------------|
-printMissileInfo = 0    # Enables terminal output of missile string info, keeps destruction messages    |
+printMissileInfo = 1    # Enables terminal output of missile string info, keeps destruction messages    |
 printPosHprInfo = 0     # Enables terminal output of Pos and Hpr information of the model               |
 printReloads = 0        # Enables reload messages                                                       |
 # ------------------------------------------------------------------------------------------------------|
@@ -218,7 +218,7 @@ class Player(SphereCollidableObjectVec3):
             #Create our missile
             currentmissile = Missile(self.loader, 'Assets/Phaser/phaser.egg', self.render, tag, posVec, 3.0)
             self.traverser.addCollider(currentmissile.collisionNode, self.handler)  # (project6) used to allow the traverser to traverse through this collider
-            self.updateHUD("Empty")
+            self.updateHUDAmmo("Empty")
             Missile.Intervals[tag] = currentmissile.modelNode.posInterval(2.0, travVec, startPos = posVec, fluid = 1)
             Missile.Intervals[tag].start()
             
@@ -229,7 +229,7 @@ class Player(SphereCollidableObjectVec3):
         if task.time > self.reloadTime:
             self.missileBay += 1
             if printReloads == 1: print("reload complete")
-            self.updateHUD("Full")
+            self.updateHUDAmmo("Full")
             return Task.done
         elif task.time <= self.reloadTime:
             if printReloads == 1: print("Still reloading!")
@@ -248,13 +248,13 @@ class Player(SphereCollidableObjectVec3):
                 return Task.cont
         
 
-    def enableHUD(self):
+    def enableHUD(self): #Used to be in MyApp before
         self.crosshair = OnscreenImage(image = "Assets/Hud/crosshair4.png", pos = Vec3(0,0,0), scale = 0.4)
         self.crosshair.setTransparency(TransparencyAttrib.MAlpha)
         self.hud = OnscreenImage(image = "Assets/Hud/hudV1.png", pos = Vec3(0,0,0), scale = 1)
         self.hud.setTransparency(TransparencyAttrib.MAlpha)
 
-    def updateHUD (self, ammoStr: str):
+    def updateHUDAmmo(self, ammoStr: str): #Updates the HUD to show ammo
         if (ammoStr == "Empty"):
             try:
                 self.hud.destroy()
@@ -284,9 +284,9 @@ class Player(SphereCollidableObjectVec3):
         intoNode = entry.getIntoNodePath().getName()
         if printMissileInfo == 1: print("intoNode:" + intoNode)
 
-        intoPosition = Vec3(entry.getSurfacePoint(self.render)) #logs where the into object was hit
+        intoPosition = Vec3(entry.getSurfacePoint(self.render))     # logs where the into object was hit
 
-        tempVar = fromNode.split('_')       # All of this makes variables out of the names of the strings, splitting where certain characters are
+        tempVar = fromNode.split('_')                               # All of this makes variables out of the names of the strings, splitting where certain characters are
         if printMissileInfo == 1: print("tempVar: " + str(tempVar))
 
         shooter = tempVar[0]
@@ -301,13 +301,15 @@ class Player(SphereCollidableObjectVec3):
         victim = tempVar[0]
         if printMissileInfo == 1: print("Victim: " + str(victim))
         
-
         pattern = r'[0-9]' # pattern to remove the numbers 0-9, uses Regex import
         strippedString = re.sub(pattern, '', victim) # replaces numbers with nothing, removes numbers from victim
+        if printMissileInfo == 1: print("StrippedString: ", strippedString)
 
         if (strippedString == "Drone" or strippedString == "Planet" or strippedString == "SpaceStation"): #Excludes the sun and the universe
             print(victim, ' hit at ', intoPosition)
             self.destroyObject(victim, intoPosition)
+        elif(strippedString == "Universe"):
+            Missile.Intervals[shooter].finish()
         
         if printMissileInfo == 1: print(shooter + " is destroyed")
         Missile.Intervals[shooter].finish()
@@ -449,7 +451,7 @@ class Missile(SphereCollidableObject):
         super(Missile, self).__init__(loader, modelPath, parentNode, nodeName, 0, 0, 0, 3.0)
         self.modelNode.setPos(posVec)
         self.modelNode.setScale(scaleVec)
-        print("Fire Missile #" + str(Missile.missileCount)) #Moved from below the .show() part below
+        print("Fire Missile" + str(Missile.missileCount)) #Moved from below the .show() part below
         Missile.missileCount += 1
         
         Missile.fireModels[nodeName] = self.modelNode
