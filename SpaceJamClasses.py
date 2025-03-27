@@ -5,11 +5,12 @@ from direct.task.Task import TaskManager
 import DefensePaths as defensePaths
 from typing import Callable
 from panda3d.core import *
-from panda3d.core import Loader, NodePath, Vec3, CollisionHandlerEvent, Material
+from panda3d.core import Loader, NodePath, Vec3, CollisionHandlerEvent, Material, TransparencyAttrib
 from direct.interval.LerpInterval import LerpFunc
 from direct.particles.ParticleEffect import ParticleEffect
 import re # Regex module import for string editing.
 from CollideObjectBase import InverseSphereCollideObject, CapsuleCollidableObject, SphereCollidableObject, SphereCollidableObjectVec3, PlacedObject # type: ignore
+from direct.gui.OnscreenImage import OnscreenImage
 
 # --------------------------------------- Programmer controls ------------------------------------------|
 printMissileInfo = 0    # Enables terminal output of missile string info, keeps destruction messages    |
@@ -20,6 +21,7 @@ printReloads = 0        # Enables reload messages                               
 class Player(SphereCollidableObjectVec3):
     def __init__(self, loader: Loader, taskMgr: TaskManager, accept: Callable[[str, Callable], None], modelPath: str, parentNode: NodePath, nodeName: str, posVec: Vec3, scaleVec: float, Hpr: Vec3, render, traverser):
         super(Player, self).__init__(loader, modelPath, parentNode, nodeName, posVec, 10) ##Uses __init__ function from SphereCollideObject
+        self.enableHUD()
         self.taskMgr = taskMgr
         self.accept = accept
         self.loader = loader
@@ -216,7 +218,7 @@ class Player(SphereCollidableObjectVec3):
             #Create our missile
             currentmissile = Missile(self.loader, 'Assets/Phaser/phaser.egg', self.render, tag, posVec, 3.0)
             self.traverser.addCollider(currentmissile.collisionNode, self.handler)  # (project6) used to allow the traverser to traverse through this collider
-
+            self.updateHUD("Empty")
             Missile.Intervals[tag] = currentmissile.modelNode.posInterval(2.0, travVec, startPos = posVec, fluid = 1)
             Missile.Intervals[tag].start()
             
@@ -227,6 +229,7 @@ class Player(SphereCollidableObjectVec3):
         if task.time > self.reloadTime:
             self.missileBay += 1
             if printReloads == 1: print("reload complete")
+            self.updateHUD("Full")
             return Task.done
         elif task.time <= self.reloadTime:
             if printReloads == 1: print("Still reloading!")
@@ -234,12 +237,45 @@ class Player(SphereCollidableObjectVec3):
         if self.missileBay > 1: # if the missiles ever glitch out
             self.missileBay = 1
             return Task.done
+        
+    def getReloadTime(self):
+        return self.reloadTime
     
     def checkReload(self):
         if not self.taskMgr.hasTaskNamed('reload'):
                 if printReloads == 1: print('Reloading')
                 self.taskMgr.doMethodLater(0, self.reload, 'reload')
                 return Task.cont
+        
+
+    def enableHUD(self):
+        self.crosshair = OnscreenImage(image = "Assets/Hud/crosshair4.png", pos = Vec3(0,0,0), scale = 0.4)
+        self.crosshair.setTransparency(TransparencyAttrib.MAlpha)
+        self.hud = OnscreenImage(image = "Assets/Hud/hudV1.png", pos = Vec3(0,0,0), scale = 1)
+        self.hud.setTransparency(TransparencyAttrib.MAlpha)
+
+    def updateHUD (self, ammoStr: str):
+        if (ammoStr == "Empty"):
+            try:
+                self.hud.destroy()
+                self.hudEmpty = OnscreenImage(image = "Assets/Hud/hudV1NoAmmo.png", pos = Vec3(0,0,0), scale = 1)
+                self.hudEmpty.setTransparency(TransparencyAttrib.MAlpha)
+            except:
+                self.hudEmpty.destroy()
+                self.hudEmpty = OnscreenImage(image = "Assets/Hud/hudV1NoAmmo.png", pos = Vec3(0,0,0), scale = 1)
+                self.hudEmpty.setTransparency(TransparencyAttrib.MAlpha)
+            
+        if (ammoStr == "Full"):
+            try:
+                self.hudEmpty.destroy()
+                self.hud = OnscreenImage(image = "Assets/Hud/hudV1.png", pos = Vec3(0,0,0), scale = 1)
+                self.hudEmpty.setTransparency(TransparencyAttrib.MAlpha)
+            except:
+                self.hud.destroy()
+                self.hud = OnscreenImage(image = "Assets/Hud/hudV1.png", pos = Vec3(0,0,0), scale = 1)
+                self.hud.setTransparency(TransparencyAttrib.MAlpha)
+            
+        
 
     def handleInto(self, entry): # entry contains the collision information (name and pos of hit) also decides which objects are to be destroyed (project6)
         fromNode = entry.getFromNodePath().getName()

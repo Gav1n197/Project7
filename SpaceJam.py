@@ -14,6 +14,8 @@ import DefensePaths as defensePaths # type: ignore
 import SpaceJamClasses as spaceJamClasses # type: ignore
 from panda3d.core import CollisionTraverser, CollisionHandlerPusher, Vec3, TransparencyAttrib
 from direct.gui.OnscreenImage import OnscreenImage
+from direct.task import Task
+from direct.task.Task import TaskManager
 
 class MyApp(ShowBase):
     def __init__(self): ## Constructor
@@ -26,7 +28,7 @@ class MyApp(ShowBase):
         self.accept('escape', self.quit)  ## Esc to escape
         self.setupScene()
         self.setCamera()
-        self.enableHUD()
+        #self.enableHUD()
 
         self.pusher.addCollider(self.player.collisionNode, self.player.modelNode)       # adds collider to player, the from object in this scenario
         self.cTrav.addCollider(self.player.collisionNode, self.pusher)                  # allows player collider to be interacted with by other objects by pushing
@@ -102,11 +104,7 @@ class MyApp(ShowBase):
         self.camera.setFluidPos(0, 0, 0)              # self.camera.setFluidPos(0, -90, 0) gives 3rd person POV, collision is attached to camera, not ship
         self.camera.setHpr(0, 0, 0)
     
-    def enableHUD(self):
-        self.crosshair = OnscreenImage(image = "Assets/Hud/crosshair4.png", pos = Vec3(0,0,0), scale = 0.4)
-        self.crosshair.setTransparency(TransparencyAttrib.MAlpha)
-        self.hud = OnscreenImage(image = "Assets/Hud/hudV1.png", pos = Vec3(0,0,0), scale = 1)
-        self.hud.setTransparency(TransparencyAttrib.MAlpha)
+
 
     def quit(self):
         sys.exit()
