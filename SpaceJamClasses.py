@@ -305,7 +305,7 @@ class Player(SphereCollidableObjectVec3):
         strippedString = re.sub(pattern, '', victim) # replaces numbers with nothing, removes numbers from victim
         if printMissileInfo == 1: print("StrippedString: ", strippedString)
 
-        if (strippedString == "Drone" or strippedString == "Planet" or strippedString == "SpaceStation"): #Excludes the sun and the universe
+        if (strippedString == "Drone" or strippedString == "Planet" or strippedString == "SpaceStation" or strippedString == "Sentinel"): #Excludes the sun and the universe
             print(victim, ' hit at ', intoPosition)
             self.destroyObject(victim, intoPosition)
         elif(strippedString == "Universe"):
@@ -410,6 +410,7 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
         self.taskMgr = taskMgr
         self.orbitType = orbitType
         self.modelNode.setScale(scaleVec)
+        self.nodeName = nodeName
 
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
@@ -419,8 +420,8 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
         self.staringAt = staringAt
         Orbiter.numOrbits += 1
 
-        self.cloudClock = 0             # Used to check how long the cloud drone has been in one spot
-        self.taskFlag = "Traveler-" + str(Orbiter.numOrbits) # Custom name for each orbit used for task names
+        self.cloudClock = -1                                    # Used to check how long the cloud drone has been in one spot
+        self.taskFlag = "Traveler-" + str(Orbiter.numOrbits)    # Custom name for each orbit used for task names
         taskMgr.add(self.orbit, self.taskFlag)
     
     def orbit(self, task):
@@ -429,12 +430,18 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
             self.modelNode.setPos(positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
 
         elif self.orbitType == "Cloud":
+            if self.cloudClock == -1:
+                self.modelNode.setPos(9000, 9000, 9000)
+            
             if self.cloudClock < Orbiter.cloudTimer:
-                self.cloudTimer += 1
+                self.cloudClock += 1
             else:
                 self.cloudClock = 0
-                positionVec = defensePaths.Cloud()
+                positionVec = defensePaths.Cloud(self.orbitRadius)
                 self.modelNode.setPos(positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
+                print(self.nodeName, ":  ", positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
+            
+        
         self.modelNode.lookAt(self.staringAt.modelNode)
         return task.cont
 
