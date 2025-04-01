@@ -27,12 +27,12 @@ class Player(SphereCollidableObjectVec3):
         self.loader = loader
         self.render = render
         #self.modelNode = loader.loadModel(modelPath)
-        self.modelNode.reparentTo(parentNode)
+        #self.modelNode.reparentTo(parentNode)
 
         self.modelNode.setPos(posVec)
         self.modelNode.setScale(scaleVec)
 
-        self.modelNode.setName(nodeName)
+        #self.modelNode.setName(nodeName)
         self.modelNode.setHpr(Hpr)
 
         self.reloadTime = 1.00
@@ -380,14 +380,19 @@ class Planet(SphereCollidableObject):
         self.modelNode.setPos(x,y,z)
         self.modelNode.setScale(scaleVec)
 
+        if nodeName == "Sun":
+            self.modelNode.setHpr(90,0,0)
+
         #self.modelNode.setName(nodeName)
 
+        
+        
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
         
 class Drone(SphereCollidableObject):
     def __init__(self, loader: Loader, modelPath: str, parentNode: NodePath, nodeName: str, texPath: str, posVec: Vec3, scaleVec: float): # type: ignore
-        super(Drone, self).__init__(loader, modelPath, parentNode, nodeName, 0, 0, 0, 4)
+        super(Drone, self).__init__(loader, modelPath, parentNode, nodeName, 0, 0, 0, 2)
         #self.modelNode = loader.loadModel(modelPath)
         #self.modelNode.reparentTo(parentNode)
 
@@ -395,7 +400,7 @@ class Drone(SphereCollidableObject):
         self.modelNode.setScale(scaleVec)
 
         #self.modelNode.setName(nodeName)
-
+        
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
     droneCount = 1
@@ -445,8 +450,6 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
         self.modelNode.lookAt(self.staringAt.modelNode)
         return task.cont
 
-
-
 class Missile(SphereCollidableObject):
     fireModels = {}             # Dictionaries
     cNodes = {}
@@ -474,8 +477,6 @@ class Sun(Planet):
         self.sunNode = loader.loadModel(modelPath)
         
         self.setLight(render, x, y, z)
-        self.setMaterial()
-        
 
     def setLight(self, render, x, y, z):
         sunLight = PointLight('sunLight')               # type: ignore
@@ -485,9 +486,4 @@ class Sun(Planet):
         #sunLight.setColorTemperature(self.sunTemp)
         sunLightNode.setPos(x, y, z)
         render.setLight(sunLightNode)
-    
-    def setMaterial(self):
-        sunMat = Material()
-        sunMat.setEmission((0,1000,0,1))
-        self.sunNode.setMaterial(sunMat)
         

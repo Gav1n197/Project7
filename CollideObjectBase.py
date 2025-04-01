@@ -1,13 +1,22 @@
-from panda3d.core import PandaNode, Loader, NodePath, CollisionNode, CollisionSphere, CollisionInvSphere, CollisionCapsule, Vec3
+from panda3d.core import PandaNode, Loader, NodePath, CollisionNode, CollisionSphere, CollisionInvSphere, CollisionCapsule, Vec3, Material
 
 # --------------------------------------- Programmer controls ------------------------------------------|
-showCollide = 1 # Enables collider showing for planets, missiles, drones, and stations                  |
+showCollide = 0 # Enables collider showing for planets, missiles, drones, and stations                  |
 # ------------------------------------------------------------------------------------------------------|
 
 
 class PlacedObject(PandaNode):
     def __init__(self, loader: Loader, modelPath: str, parentNode: NodePath, nodeName: str):
         self.modelNode: NodePath = loader.loadModel(modelPath)
+
+        if nodeName == "Sun":
+            print("Sun material added")
+            sunMaterial = Material()
+            sunMaterial.setAmbient((0.88, 0.48, 0.11, 1)) 
+            sunMaterial.setDiffuse((0.88, 0.48, 0.11, 1)) 
+            sunMaterial.setEmission((0.88, 0.48, 0.11, 1)) 
+            sunMaterial.setSpecular((0.88, 0.48, 0.11, 1)) 
+            self.modelNode.setMaterial(sunMaterial, 1) #NEEDS the 1 afterward
 
         if not isinstance(self.modelNode, NodePath):
             raise AssertionError("PlacedObject loader.loadModel(" + modelPath + ") did not return a proper PandaNode!")
