@@ -308,7 +308,13 @@ class Player(SphereCollidableObjectVec3):
         if (strippedString == "Drone" or strippedString == "Planet" or strippedString == "SpaceStation" or strippedString == "Sentinel"): #Excludes the sun and the universe
             print(victim, ' hit at ', intoPosition)
             self.destroyObject(victim, intoPosition)
+        elif(strippedString == "Sun"):
+            self.explodeNode.setPos(intoPosition)
+            self.explode()
+            Missile.Intervals[shooter].finish()
         elif(strippedString == "Universe"):
+            self.explodeNode.setPos(intoPosition)
+            self.explode()
             Missile.Intervals[shooter].finish()
         
         if printMissileInfo == 1: print(shooter + " is destroyed")
@@ -325,7 +331,7 @@ class Player(SphereCollidableObjectVec3):
         self.cntExplode += 1
         tag = "particles-" + str(self.cntExplode)
 
-        self.explodeIntervals[tag] = LerpFunc(self.explodeLight, duration = 2.0) # 2.0 was 4.0, set to 2 so it wouldn't explode twice
+        self.explodeIntervals[tag] = LerpFunc(self.explodeLight, duration = 4.0) # 2.0 was 4.0, set to 2 so it wouldn't explode twice
         self.explodeIntervals[tag].start()
 
     def explodeLight(self, t):
@@ -338,8 +344,8 @@ class Player(SphereCollidableObjectVec3):
     def SetParticles(self):
         base.enableParticles() # type: ignore
         self.explodeEffect = ParticleEffect()
-        self.explodeEffect.loadConfig("Assets/ParticleEffects/basic_xpld_efx.ptf")
-        self.explodeEffect.setScale(30)
+        self.explodeEffect.loadConfig("Assets/ParticleEffects/SP21-explosionIII.ptf")
+        self.explodeEffect.setScale(50)
         self.explodeNode = self.render.attachNewNode('ExplosionEffects')
 
 class Universe(InverseSphereCollideObject):
