@@ -13,7 +13,7 @@ from CollideObjectBase import InverseSphereCollideObject, CapsuleCollidableObjec
 from direct.gui.OnscreenImage import OnscreenImage
 
 # --------------------------------------- Programmer controls ------------------------------------------|
-printMissileInfo = 1    # Enables terminal output of missile string info, keeps destruction messages    |
+printMissileInfo = 0    # Enables terminal output of missile string info, keeps destruction messages    |
 printPosHprInfo = 0     # Enables terminal output of Pos and Hpr information of the model               |
 printReloads = 0        # Enables reload messages                                                       |
 # ------------------------------------------------------------------------------------------------------|
@@ -387,7 +387,7 @@ class Planet(SphereCollidableObject):
         
 class Drone(SphereCollidableObject):
     def __init__(self, loader: Loader, modelPath: str, parentNode: NodePath, nodeName: str, texPath: str, posVec: Vec3, scaleVec: float): # type: ignore
-        super(Drone, self).__init__(loader, modelPath, parentNode, nodeName, 0, 0, 0, 2)
+        super(Drone, self).__init__(loader, modelPath, parentNode, nodeName, 0, 0, 0, 4)
         #self.modelNode = loader.loadModel(modelPath)
         #self.modelNode.reparentTo(parentNode)
 
@@ -398,7 +398,7 @@ class Drone(SphereCollidableObject):
 
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
-    droneCount = 0
+    droneCount = 1
 
 class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that moves around an object (project7)
     numOrbits = 0                       # Used for naming each sentinel's orbit

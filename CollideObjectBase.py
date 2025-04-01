@@ -1,7 +1,7 @@
 from panda3d.core import PandaNode, Loader, NodePath, CollisionNode, CollisionSphere, CollisionInvSphere, CollisionCapsule, Vec3
 
 # --------------------------------------- Programmer controls ------------------------------------------|
-showCollide = 0 # Enables collider showing for planets, missiles, drones, and stations                  |
+showCollide = 1 # Enables collider showing for planets, missiles, drones, and stations                  |
 # ------------------------------------------------------------------------------------------------------|
 
 
