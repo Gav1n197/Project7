@@ -344,8 +344,9 @@ class Player(SphereCollidableObjectVec3):
     def SetParticles(self):
         base.enableParticles() # type: ignore
         self.explodeEffect = ParticleEffect()
-        self.explodeEffect.loadConfig("Assets/ParticleEffects/SP21-explosionIII.ptf")
+        self.explodeEffect.loadConfig("Assets/ParticleEffects/basic_xpld_efx2.ptf")
         self.explodeEffect.setScale(50)
+        #print(self.explodeEffect.getParticlesList())
         self.explodeNode = self.render.attachNewNode('ExplosionEffects')
 
 class Universe(InverseSphereCollideObject):
@@ -481,6 +482,7 @@ class Sun(Planet):
         
         self.sunTemp = 5772                             # 5772 is the temperature of our sun (kelvin)
         self.sunNode = loader.loadModel(modelPath)
+        self.brightness = 1
         
         self.setLight(render, x, y, z)
 
@@ -488,7 +490,7 @@ class Sun(Planet):
         sunLight = PointLight('sunLight')               # type: ignore
         sunLightNode = render.attachNewNode(sunLight)
         sunLight.attenuation = (1, 0, 0)              # Strength of light
-        sunLight.color = (11000, 10000, 10000, 1)
+        sunLight.color = (0.93*self.brightness, 1*self.brightness, 0*self.brightness, 1)
         #sunLight.setColorTemperature(self.sunTemp)
         sunLightNode.setPos(x, y, z)
         render.setLight(sunLightNode)
