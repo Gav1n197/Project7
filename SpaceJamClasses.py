@@ -251,28 +251,28 @@ class Player(SphereCollidableObjectVec3):
     def enableHUD(self): #Used to be in MyApp before
         self.crosshair = OnscreenImage(image = "Assets/Hud/crosshair4.png", pos = Vec3(0,0,0), scale = 0.4)
         self.crosshair.setTransparency(TransparencyAttrib.MAlpha)
-        self.hud = OnscreenImage(image = "Assets/Hud/hudV1.png", pos = Vec3(0,0,0), scale = 1)
+        self.hud = OnscreenImage(image = "Assets/Hud/hudV2.png", pos = Vec3(0,0,0), scale = 1)
         self.hud.setTransparency(TransparencyAttrib.MAlpha)
 
     def updateHUDAmmo(self, ammoStr: str): #Updates the HUD to show ammo
         if (ammoStr == "Empty"):
             try:
                 self.hud.destroy()
-                self.hudEmpty = OnscreenImage(image = "Assets/Hud/hudV1NoAmmo.png", pos = Vec3(0,0,0), scale = 1)
+                self.hudEmpty = OnscreenImage(image = "Assets/Hud/hudV2NoAmmo.png", pos = Vec3(0,0,0), scale = 1)
                 self.hudEmpty.setTransparency(TransparencyAttrib.MAlpha)
             except:
                 self.hudEmpty.destroy()
-                self.hudEmpty = OnscreenImage(image = "Assets/Hud/hudV1NoAmmo.png", pos = Vec3(0,0,0), scale = 1)
+                self.hudEmpty = OnscreenImage(image = "Assets/Hud/hudV2NoAmmo.png", pos = Vec3(0,0,0), scale = 1)
                 self.hudEmpty.setTransparency(TransparencyAttrib.MAlpha)
             
         if (ammoStr == "Full"):
             try:
                 self.hudEmpty.destroy()
-                self.hud = OnscreenImage(image = "Assets/Hud/hudV1.png", pos = Vec3(0,0,0), scale = 1)
+                self.hud = OnscreenImage(image = "Assets/Hud/hudV2.png", pos = Vec3(0,0,0), scale = 1)
                 self.hudEmpty.setTransparency(TransparencyAttrib.MAlpha)
             except:
                 self.hud.destroy()
-                self.hud = OnscreenImage(image = "Assets/Hud/hudV1.png", pos = Vec3(0,0,0), scale = 1)
+                self.hud = OnscreenImage(image = "Assets/Hud/hudV2.png", pos = Vec3(0,0,0), scale = 1)
                 self.hud.setTransparency(TransparencyAttrib.MAlpha)
             
         
