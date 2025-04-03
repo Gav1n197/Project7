@@ -60,7 +60,7 @@ class MyApp(ShowBase):
 
         self.sun     = spaceJamClasses.Sun(self.loader, "Assets/Planets/protoPlanet.x", self.render, "Sun", "Assets/Planets/Textures/Sun.jpg",            0,  0,   0,  400, self.render) 
         self.planet1 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet1", "Assets/Planets/Textures/Mercury.jpg",        10,   0, 0, 1) 
-        self.planet2 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.planet1.modelNode, "Planet2", "Assets/Planets/Textures/Moon.jpg",           -5,   0, 0, 0.3)
+        self.planet2 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet2", "Assets/Planets/Textures/Moon.jpg",           -5,   -3, 0, 0.3)
         self.planet3 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet3", "Assets/Planets/Textures/WhitePlanet.jpg",   -10,  0, 0, 0.6) 
         self.planet4 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet4", "Assets/Planets/Textures/Neptune.jpg",       10,  -15, 0,  0.4) 
         self.planet5 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet5", "Assets/Planets/Textures/Venus.jpg",          10, 10, 2,  1)
@@ -108,6 +108,8 @@ class MyApp(ShowBase):
         if task.time < 2000.0:
             if name == "Sun":
                 self.planets[self.rotationIndex].modelNode.setHpr(h + self.rot*0.05,0,0)
+            elif name == "Planet2":
+                self.planets[self.rotationIndex].modelNode.setHpr(h + self.rot*1.2,0,0)
             else:
                 self.planets[self.rotationIndex].modelNode.setHpr(h + self.rot*1,0,0)
             #print("rotating " + str(name))
