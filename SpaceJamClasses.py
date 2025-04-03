@@ -1,10 +1,11 @@
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import *
+from direct.interval.IntervalGlobal import Sequence
 from direct.task import Task
 from direct.task.Task import TaskManager
+
 import DefensePaths as defensePaths
 from typing import Callable
-from panda3d.core import *
 from panda3d.core import Loader, NodePath, Vec3, CollisionHandlerEvent, Material, TransparencyAttrib
 from direct.interval.LerpInterval import LerpFunc
 from direct.particles.ParticleEffect import ParticleEffect
@@ -19,13 +20,17 @@ printReloads = 0        # Enables reload messages                               
 # ------------------------------------------------------------------------------------------------------|
 
 class Player(SphereCollidableObjectVec3):
-    def __init__(self, loader: Loader, taskMgr: TaskManager, accept: Callable[[str, Callable], None], modelPath: str, parentNode: NodePath, nodeName: str, posVec: Vec3, scaleVec: float, Hpr: Vec3, render, traverser):
+    def __init__(self, loader: Loader, taskMgr: TaskManager, accept: Callable[[str, Callable], None], modelPath: str, parentNode: NodePath, nodeName: str, posVec: Vec3, scaleVec: float, Hpr: Vec3, render, traverser, 
+                 sun, planet1, planet3):
         super(Player, self).__init__(loader, modelPath, parentNode, nodeName, posVec, 10) ##Uses __init__ function from SphereCollideObject
         self.enableHUD()
         self.taskMgr = taskMgr
         self.accept = accept
         self.loader = loader
         self.render = render
+        self.sun = sun
+        self.planet1 = planet1
+        self.planet3 = planet3
         #self.modelNode = loader.loadModel(modelPath)
         #self.modelNode.reparentTo(parentNode)
 
@@ -321,8 +326,26 @@ class Player(SphereCollidableObjectVec3):
         try:
             nodeID = self.render.find(hitID)
             nodeID.detachNode()
+            #print("nodeID found under render")
         except:
-            print("No nodeID found")
+            try:
+                nodeID = self.sun.modelNode.find(hitID)
+                nodeID.detachNode()
+                #print("nodeID found under sun")
+            except:
+                try:
+                    nodeID = self.planet1.modelNode.find(hitID)
+                    nodeID.detachNode()
+                    #print("nodeID found under planet1")
+                except:
+                    try:
+                        nodeID = self.planet3.modelNode.find(hitID)
+                        nodeID.detachNode()
+                        #print("nodeID found under planet3")
+                    except:
+                        print("No nodeID found")
+
+            
         
         self.explodeNode.setPos(hitPos)
         self.explode()
@@ -391,12 +414,6 @@ class Planet(SphereCollidableObject):
         
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
-
-    
-        
-       
-
-    
         
 class Drone(SphereCollidableObject):
     def __init__(self, loader: Loader, modelPath: str, parentNode: NodePath, nodeName: str, texPath: str, posVec: Vec3, scaleVec: float): # type: ignore
@@ -415,7 +432,7 @@ class Drone(SphereCollidableObject):
 
 class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that moves around an object (project7)
     numOrbits = 0                       # Used for naming each sentinel's orbit
-    velocity = 0.005                    # Speed of orbiting
+    velocity = 0.055                    # Speed of orbiting
     cloudTimer = 240                    # Controls how long until the drones move
     def __init__(self, loader: Loader, taskMgr: TaskManager, modelPath: str, parentNode: NodePath, nodeName: str, scaleVec: Vec3, texPath: str, 
                  centralObject: PlacedObject, orbitRadius: float, orbitType: str, staringAt: Vec3):
@@ -423,7 +440,7 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
         self.taskMgr = taskMgr
         self.orbitType = orbitType
         self.modelNode.setScale(scaleVec)
-        self.nodeName = nodeName
+        #self.nodeName = nodeName
 
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
@@ -440,7 +457,7 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
     def orbit(self, task):
         if self.orbitType == "MLB":
             positionVec = defensePaths.BaseballSeams(task.time * Orbiter.velocity, self.numOrbits, 2.0)
-            #self.modelNode.setPos(positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
+            self.modelNode.setPos((positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())/80)
 
         elif self.orbitType == "Cloud":
             if self.cloudClock == -1:
@@ -495,4 +512,37 @@ class Sun(Planet):
         #sunLight.setColorTemperature(self.sunTemp)
         sunLightNode.setPos(x, y, z)
         render.setLight(sunLightNode)
+
+class Wanderer(SphereCollidableObjectVec3):
+    numWanderers = 0
+
+    def __init__(self, loader: Loader, modelPath: str, parentNode: NodePath, modelName: str, scaleVec: Vec3, texPath: str, staringAt: Vec3, speed: int):
+        super(Wanderer, self).__init__(loader, modelPath, parentNode, modelName, Vec3(0,0,0), 3.2)
+        self.speed = speed
+        self.modelNode.setScale(scaleVec)
+        tex = loader.loadTexture(texPath)
+        self.modelNode.setTexture(tex, 1)
+        self.staringAt = staringAt
+        Wanderer.numWanderers += 1
+        print(Wanderer.numWanderers)
+
+        if Wanderer.numWanderers == 1:
+            self.defineRoute(Vec3(0,1000,700), Vec3(-360, 5500, 2390), Vec3(-2500, 6000, 1470), Vec3(-2300, 5800, 770))
+            ## Sun > Planet1 > Planet 3 > Planet 4
+        if Wanderer.numWanderers == 2:
+            self.defineRoute(Vec3(0,1000,700), Vec3(2600, -5600, 700), Vec3(-2700, -5700, 700), Vec3(-2250, 5800, 770))
+            ## Sun > Planet 5 > Planet 6 > Planet 4
+        try:
+            self.travelRoute.loop()
+        except:
+            print("No travelRoute defined for wanderer " + Wanderer.numWanderers)
+
+    def defineRoute(self, originPos, pos1, pos2, pos3):
+            self.posInterval0 = self.modelNode.posInterval(self.speed, pos1, startPos = originPos)
+            self.posInterval1 = self.modelNode.posInterval(self.speed, pos2, startPos = pos1)
+            self.posInterval2 = self.modelNode.posInterval(self.speed, pos3, startPos = pos2)
+            self.posInterval3 = self.modelNode.posInterval(self.speed*2, originPos, startPos = pos3) # To start point
         
+            self.travelRoute = Sequence(self.posInterval0, self.posInterval1, self.posInterval2, self.posInterval3, name = "Traveler" + str(Wanderer.numWanderers))
+
+        #self.travelRoute.loop()
