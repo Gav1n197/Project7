@@ -17,6 +17,10 @@ class PlacedObject(PandaNode):
             sunMaterial.setEmission((0.88, 0.48, 0.11, 1)) 
             sunMaterial.setSpecular((0.88, 0.48, 0.11, 1)) 
             self.modelNode.setMaterial(sunMaterial, 1) #NEEDS the 1 afterward
+        else:
+            material = Material()
+            self.modelNode.setMaterial(material, 1)
+
 
         if not isinstance(self.modelNode, NodePath):
             raise AssertionError("PlacedObject loader.loadModel(" + modelPath + ") did not return a proper PandaNode!")

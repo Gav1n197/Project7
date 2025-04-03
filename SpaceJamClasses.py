@@ -31,7 +31,7 @@ class Player(SphereCollidableObjectVec3):
 
         self.modelNode.setPos(posVec)
         self.modelNode.setScale(scaleVec)
-
+        
         #self.modelNode.setName(nodeName)
         self.modelNode.setHpr(Hpr)
 
@@ -213,7 +213,6 @@ class Player(SphereCollidableObjectVec3):
             self.missileBay -= 1
             tag = 'Missile' + str(Missile.missileCount)                             # Creates a tag for each missile that details the number of the missile
             posVec = self.modelNode.getPos() + inFront
-            
 
             #Create our missile
             currentmissile = Missile(self.loader, 'Assets/Phaser/phaser.egg', self.render, tag, posVec, 3.0)
@@ -274,8 +273,6 @@ class Player(SphereCollidableObjectVec3):
                 self.hud.destroy()
                 self.hud = OnscreenImage(image = "Assets/Hud/hudV2.png", pos = Vec3(0,0,0), scale = 1)
                 self.hud.setTransparency(TransparencyAttrib.MAlpha)
-            
-        
 
     def handleInto(self, entry): # entry contains the collision information (name and pos of hit) also decides which objects are to be destroyed (project6)
         fromNode = entry.getFromNodePath().getName()
@@ -321,9 +318,12 @@ class Player(SphereCollidableObjectVec3):
         Missile.Intervals[shooter].finish()
 
     def destroyObject(self, hitID, hitPos):
-        nodeID = self.render.find(hitID)
-        nodeID.detachNode()
-
+        try:
+            nodeID = self.render.find(hitID)
+            nodeID.detachNode()
+        except:
+            print("No nodeID found")
+        
         self.explodeNode.setPos(hitPos)
         self.explode()
     
@@ -383,19 +383,20 @@ class Planet(SphereCollidableObject):
         super(Planet, self).__init__(loader, modelPath, parentNode, nodeName, 0, 0, 0, 1.1)
         #self.modelNode = loader.loadModel(modelPath)
         #self.modelNode.reparentTo(parentNode)
-
         self.modelNode.setPos(x,y,z)
         self.modelNode.setScale(scaleVec)
-
+        self.nodeName = nodeName
         if nodeName == "Sun":
             self.modelNode.setHpr(90,0,0)
-
-        #self.modelNode.setName(nodeName)
-
-        
         
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
+
+    
+        
+       
+
+    
         
 class Drone(SphereCollidableObject):
     def __init__(self, loader: Loader, modelPath: str, parentNode: NodePath, nodeName: str, texPath: str, posVec: Vec3, scaleVec: float): # type: ignore
@@ -439,7 +440,7 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
     def orbit(self, task):
         if self.orbitType == "MLB":
             positionVec = defensePaths.BaseballSeams(task.time * Orbiter.velocity, self.numOrbits, 2.0)
-            self.modelNode.setPos(positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
+            #self.modelNode.setPos(positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
 
         elif self.orbitType == "Cloud":
             if self.cloudClock == -1:
@@ -451,7 +452,7 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
                 self.cloudClock = 0
                 positionVec = defensePaths.Cloud(self.orbitRadius)
                 self.modelNode.setPos(positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
-                print(self.nodeName, ":  ", positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
+                #print(self.nodeName, ":  ", positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
             
         
         self.modelNode.lookAt(self.staringAt.modelNode)
@@ -481,16 +482,16 @@ class Sun(Planet):
         super(Sun, self).__init__(loader, modelPath, parentNode, nodeName, texPath, x, y, z, scaleVec)
         
         self.sunTemp = 5772                             # 5772 is the temperature of our sun (kelvin)
-        self.sunNode = loader.loadModel(modelPath)
+        #self.sunNode = loader.loadModel(modelPath)
         self.brightness = 1
-        
+
         self.setLight(render, x, y, z)
 
     def setLight(self, render, x, y, z):
         sunLight = PointLight('sunLight')               # type: ignore
         sunLightNode = render.attachNewNode(sunLight)
         sunLight.attenuation = (1, 0, 0)              # Strength of light
-        sunLight.color = (0.93*self.brightness, 1*self.brightness, 0*self.brightness, 1)
+        sunLight.color = (0.93*self.brightness, 1*self.brightness, .40*self.brightness, 1)
         #sunLight.setColorTemperature(self.sunTemp)
         sunLightNode.setPos(x, y, z)
         render.setLight(sunLightNode)
