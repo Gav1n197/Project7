@@ -439,7 +439,7 @@ class Drone(SphereCollidableObject):
 
 class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that moves around an object (project7)
     numOrbits = 0                       # Used for naming each sentinel's orbit
-    velocity = 0.055                    # Speed of orbiting
+    velocity = 0.035                    # Speed of orbiting
     cloudTimer = 240                    # Controls how long until the drones move
     def __init__(self, loader: Loader, taskMgr: TaskManager, modelPath: str, parentNode: NodePath, nodeName: str, scaleVec: Vec3, texPath: str, 
                  centralObject: PlacedObject, orbitRadius: float, orbitType: str, staringAt: Vec3):
