@@ -44,16 +44,16 @@ class MyApp(ShowBase):
             self.drawCloudDefense(self.planet1, nickName)
 
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
-            self.drawBaseballSeams(self.sun, nickName, i, fullCycle, 2)
+            self.drawBaseballSeams(self.sun, nickName, i, fullCycle, 3)
 
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
-            self.drawCircleX(self.planet3, nickName, i, fullCycle, 225)
+            self.drawCircleX(self.planet3, nickName, i, fullCycle, 2)
 
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
-            self.drawCircleY(self.planet4, nickName, i, fullCycle, 175)
+            self.drawCircleY(self.planet4, nickName, i, fullCycle, 2)
 
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
-            self.drawCircleZ(self.planet5, nickName, i, fullCycle, 425)
+            self.drawCircleZ(self.planet5, nickName, i, fullCycle, 2)
             
     def setupScene(self): ## snailCase for entire project
         self.universe = spaceJamClasses.Universe(self.loader, "Assets/Universe/Universe.x", self.render, "Universe", "Assets/Universe/Universe.jpg", (0,0,0), 14000)
@@ -71,17 +71,18 @@ class MyApp(ShowBase):
         self.spaceStation1 = spaceJamClasses.SpaceStation(self.loader, "Assets/SpaceStation/SpaceStation1B/spaceStation.x", self.render, "SpaceStation1", "Assets/SpaceStation/SpaceStation1B/SpaceStation1_Dif2.png", (500, -570, 0), 5) 
         #self.spaceStation2 = spaceJamClasses.SpaceStation(self.loader, "Assets/SpaceStation/SpaceStation1B/spaceStation.x", self.render, "SpaceStation2", "Assets/SpaceStation/SpaceStation1B/SpaceStation1_Dif2.png", (740, 0, 0), 6) 
 
-        self.player = spaceJamClasses.Player(self.loader, self.taskMgr, self.accept, "Assets/Spaceships/Dumbledore/Dumbledore.x", self.render, "Player", (0, 0, 0), 1, (0, 0, 0), self.render, self.cTrav, self.sun, self.planet1, self.planet3)
+        self.player = spaceJamClasses.Player(self.loader, self.taskMgr, self.accept, "Assets/Spaceships/Dumbledore/Dumbledore.x", self.render, "Player", (0, 0, 0), 1, (0, 0, 0), self.render, self.cTrav, 
+                                             self.sun, self.planet1, self.planet3, self.planet5)
 
         self.sentinel1 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.planet3.modelNode, "Sentinel1", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
                                                  self.planet3, 250, "MLB", self.player)
-        self.sentinel2 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.planet3.modelNode, "Sentinel2", 0.10, "Assets/DroneDefender/octotoad1_auv.png", 
+        self.sentinel2 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.planet3.modelNode, "Sentinel2", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
                                                  self.planet3, 265, "MLB", self.player)
         
-        self.sentinel3 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.render, "Sentinel3", 8.0, "Assets/DroneDefender/octotoad1_auv.png", 
-                                                 self.planet6, 20, "Cloud", self.player)
-        self.sentinel4 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.render, "Sentinel4", 8.0, "Assets/DroneDefender/octotoad1_auv.png", 
-                                                 self.planet6, 20, "Cloud", self.player)
+        self.sentinel3 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.planet6.modelNode, "Sentinel3", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
+                                                 self.planet6, 12, "Cloud", self.player)
+        self.sentinel4 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.planet6.modelNode, "Sentinel4", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
+                                                 self.planet6, 12, "Cloud", self.player)
         
         #self.wanderer1 = spaceJamClasses.Wanderer(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.render, "Drone", 6.0, "Assets/DroneDefender/octotoad1_auv.png", self.player, 10)
         #self.wanderer2 = spaceJamClasses.Wanderer(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.render, "Drone", 6.0, "Assets/DroneDefender/octotoad1_auv.png", self.player, 10)
@@ -103,8 +104,6 @@ class MyApp(ShowBase):
         h = self.planets[self.rotationIndex].modelNode.getHpr()[0]
         p = self.planets[self.rotationIndex].modelNode.getHpr()[1]
         r = self.planets[self.rotationIndex].modelNode.getHpr()[2]
-
-
 
         if task.time < 2000.0:
             if name == "Sun":
@@ -138,29 +137,29 @@ class MyApp(ShowBase):
     def drawCloudDefense(self, centralObject, droneName):
         unitVec = defensePaths.Cloud()
         unitVec.normalize()
-        position = unitVec * 400 + centralObject.modelNode.getPos()
-        spaceJamClasses.Drone(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, droneName, "Assets/DroneDefender/octotoad1_auv.png", position, 10)
+        position = unitVec * 250 + centralObject.modelNode.getPos()
+        spaceJamClasses.Drone(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, droneName, "Assets/DroneDefender/octotoad1_auv.png", position, 0.05)
         spaceJamClasses.Drone.droneCount += 1
     
     def drawCircleX(self, centralObject, droneName, step, fullCircle, radius):
         unitVec = defensePaths.CircleX(step, fullCircle)
         unitVec.normalize()
         position = unitVec * radius + centralObject.modelNode.getPos() # adds relativity to the central object
-        spaceJamClasses.Drone(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, droneName, "Assets/DroneDefender/octotoad1_auv.png", position, 5)
+        spaceJamClasses.Drone(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, droneName, "Assets/DroneDefender/octotoad1_auv.png", position, 0.05)
         spaceJamClasses.Drone.droneCount += 1
 
     def drawCircleY(self, centralObject, droneName, step, fullCircle, radius):
         unitVec = defensePaths.CircleY(step, fullCircle)
         unitVec.normalize()
         position = unitVec * radius + centralObject.modelNode.getPos() # adds relativity to the central object
-        spaceJamClasses.Drone(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, droneName, "Assets/DroneDefender/octotoad1_auv.png", position, 5)
+        spaceJamClasses.Drone(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, droneName, "Assets/DroneDefender/octotoad1_auv.png", position, 0.05)
         spaceJamClasses.Drone.droneCount += 1
     
     def drawCircleZ(self, centralObject, droneName, step, fullCircle, radius):
         unitVec = defensePaths.CircleZ(step, fullCircle)
         unitVec.normalize()
         position = unitVec * radius + centralObject.modelNode.getPos() # adds relativity to the central object
-        spaceJamClasses.Drone(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, droneName, "Assets/DroneDefender/octotoad1_auv.png", position, 5)
+        spaceJamClasses.Drone(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, droneName, "Assets/DroneDefender/octotoad1_auv.png", position, 0.05)
         spaceJamClasses.Drone.droneCount += 1
 
     def setCamera(self):

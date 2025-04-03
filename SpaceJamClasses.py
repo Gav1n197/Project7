@@ -21,7 +21,7 @@ printReloads = 0        # Enables reload messages                               
 
 class Player(SphereCollidableObjectVec3):
     def __init__(self, loader: Loader, taskMgr: TaskManager, accept: Callable[[str, Callable], None], modelPath: str, parentNode: NodePath, nodeName: str, posVec: Vec3, scaleVec: float, Hpr: Vec3, render, traverser, 
-                 sun, planet1, planet3):
+                 sun, planet1, planet3, planet5):
         super(Player, self).__init__(loader, modelPath, parentNode, nodeName, posVec, 10) ##Uses __init__ function from SphereCollideObject
         self.enableHUD()
         self.taskMgr = taskMgr
@@ -31,6 +31,7 @@ class Player(SphereCollidableObjectVec3):
         self.sun = sun
         self.planet1 = planet1
         self.planet3 = planet3
+        self.planet5 = planet5
         #self.modelNode = loader.loadModel(modelPath)
         #self.modelNode.reparentTo(parentNode)
 
@@ -343,7 +344,12 @@ class Player(SphereCollidableObjectVec3):
                         nodeID.detachNode()
                         #print("nodeID found under planet3")
                     except:
-                        print("No nodeID found")
+                        try:
+                            nodeID = self.planet5.modelNode.find(hitID)
+                            nodeID.detachNode()
+                            #print("nodeID found under planet5")
+                        except:
+                            print("No nodeID found")
 
             
         
@@ -440,7 +446,7 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
         self.taskMgr = taskMgr
         self.orbitType = orbitType
         self.modelNode.setScale(scaleVec)
-        #self.nodeName = nodeName
+        self.nodeName = nodeName
 
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
@@ -458,18 +464,19 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
         if self.orbitType == "MLB":
             positionVec = defensePaths.BaseballSeams(task.time * Orbiter.velocity, self.numOrbits, 2.0)
             self.modelNode.setPos((positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())/80)
+            #print(self.nodeName, ":  ", positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
 
         elif self.orbitType == "Cloud":
             if self.cloudClock == -1:
-                self.modelNode.setPos(9000, 9000, 9000)
+                self.modelNode.setPos(3, 3, 0)
             
             if self.cloudClock < Orbiter.cloudTimer:
                 self.cloudClock += 1
             else:
                 self.cloudClock = 0
                 positionVec = defensePaths.Cloud(self.orbitRadius)
-                self.modelNode.setPos(positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
-                #print(self.nodeName, ":  ", positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
+                self.modelNode.setPos((positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())/80)
+                print(self.nodeName, ":  ", positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
             
         
         self.modelNode.lookAt(self.staringAt.modelNode)
