@@ -350,6 +350,7 @@ class Player(SphereCollidableObjectVec3):
                             #print("nodeID found under planet5")
                         except:
                             print("No nodeID found")
+        #
 
             
         
@@ -446,7 +447,7 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
         self.taskMgr = taskMgr
         self.orbitType = orbitType
         self.modelNode.setScale(scaleVec)
-        self.nodeName = nodeName
+        #self.nodeName = nodeName
 
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
@@ -463,7 +464,7 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
     def orbit(self, task):
         if self.orbitType == "MLB":
             positionVec = defensePaths.BaseballSeams(task.time * Orbiter.velocity, self.numOrbits, 2.0)
-            self.modelNode.setPos((positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())/80)
+            self.modelNode.setPos(((positionVec * self.orbitRadius )/80) + self.orbitObject.modelNode.getPos())
             #print(self.nodeName, ":  ", positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
 
         elif self.orbitType == "Cloud":
@@ -475,8 +476,8 @@ class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that mo
             else:
                 self.cloudClock = 0
                 positionVec = defensePaths.Cloud(self.orbitRadius)
-                self.modelNode.setPos((positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())/80)
-                print(self.nodeName, ":  ", positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
+                self.modelNode.setPos(((positionVec * self.orbitRadius)/80) + self.orbitObject.modelNode.getPos())
+                #print(self.nodeName, ":  ", positionVec * self.orbitRadius + self.orbitObject.modelNode.getPos())
             
         
         self.modelNode.lookAt(self.staringAt.modelNode)

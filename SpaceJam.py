@@ -1,4 +1,4 @@
-## Project7 4/2/25 3DGameEngineConcepts
+## Project8 4/3/25 3DGameEngineConcepts
 ## Comments on column 89
 ## All file names and folder names are capitalized (Assets/Planets/Textures/WhitePlanet.png)
 
@@ -74,14 +74,14 @@ class MyApp(ShowBase):
         self.player = spaceJamClasses.Player(self.loader, self.taskMgr, self.accept, "Assets/Spaceships/Dumbledore/Dumbledore.x", self.render, "Player", (0, 0, 0), 1, (0, 0, 0), self.render, self.cTrav, 
                                              self.sun, self.planet1, self.planet3, self.planet5)
 
-        self.sentinel1 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.planet3.modelNode, "Sentinel1", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
+        self.sentinel1 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, "Sentinel1", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
                                                  self.planet3, 250, "MLB", self.player)
-        self.sentinel2 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.planet3.modelNode, "Sentinel2", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
+        self.sentinel2 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, "Sentinel2", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
                                                  self.planet3, 265, "MLB", self.player)
         
-        self.sentinel3 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.planet6.modelNode, "Sentinel3", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
+        self.sentinel3 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, "Sentinel3", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
                                                  self.planet6, 12, "Cloud", self.player)
-        self.sentinel4 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.planet6.modelNode, "Sentinel4", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
+        self.sentinel4 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, "Sentinel4", 0.05, "Assets/DroneDefender/octotoad1_auv.png", 
                                                  self.planet6, 12, "Cloud", self.player)
         
         #self.wanderer1 = spaceJamClasses.Wanderer(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.render, "Drone", 6.0, "Assets/DroneDefender/octotoad1_auv.png", self.player, 10)
