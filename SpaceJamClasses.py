@@ -32,6 +32,8 @@ class Player(SphereCollidableObjectVec3):
         self.planet1 = planet1
         self.planet3 = planet3
         self.planet5 = planet5
+        
+        
         #self.modelNode = loader.loadModel(modelPath)
         #self.modelNode.reparentTo(parentNode)
 
@@ -40,7 +42,7 @@ class Player(SphereCollidableObjectVec3):
         
         #self.modelNode.setName(nodeName)
         self.modelNode.setHpr(Hpr)
-
+        self.fireMode = 'Single'            # Default firing mode
         self.reloadTime = 1.00
         self.missileDistance = 4000         # Time until missile explodes
         self.missileBay = 1                 # Only one missile at a time can be launched (originally)
@@ -110,92 +112,79 @@ class Player(SphereCollidableObjectVec3):
         self.accept('f', self.fire)
         self.accept('f-up', self.checkReload)
 
+        self.accept('1', self.toggleFireMode)
+        #self.accept('1-up', self.checkReload)
+
     def leftRoll(self, keyDown):
         if (keyDown):
             self.taskMgr.add(self.applyLeftRoll, 'left-roll')
         else:
             self.taskMgr.remove('left-roll')
-
     def rightRoll(self, keyDown):
         if (keyDown):
             self.taskMgr.add(self.applyRightRoll, 'right-roll')
         else:
             self.taskMgr.remove('right-roll')
-
-
     def applyLeftRoll(self, task):
         rate = 1
         #print('leftroll')
         self.printPosHpr()
         self.modelNode.setR(self.modelNode.getR() - rate)
         return task.cont
-        
     def applyRightRoll(self, task):
         rate = 1
         #print('rightroll')
         self.printPosHpr()
         self.modelNode.setR(self.modelNode.getR() + rate)
         return task.cont
-    
 #------------------------------------------------------------------------------------
-
     def LeftTurn(self, keyDown):
         if (keyDown):
             self.taskMgr.add(self.applyLeftTurn, 'left-turn')
         else:
             self.taskMgr.remove('left-turn')
-
     def rightTurn(self, keyDown):
         if (keyDown):
             self.taskMgr.add(self.applyRightTurn, 'right-turn')
         else:
             self.taskMgr.remove('right-turn')
-
-
     def applyLeftTurn(self, task):
         rate = 1
         #print('leftturn')
         self.printPosHpr()
         self.modelNode.setH(self.modelNode.getH() + rate)
         return task.cont
-
     def applyRightTurn(self, task):
         rate = 1
         #print('rightturn')
         self.printPosHpr()
         self.modelNode.setH(self.modelNode.getH() - rate)
         return task.cont
-    
 #------------------------------------------------------------------------------------
-
     def Up(self, keyDown):
         
         if (keyDown):
             self.taskMgr.add(self.applyUp, 'up')
         else:
             self.taskMgr.remove('up')
-
     def Down(self, keyDown):
         if (keyDown):
             self.taskMgr.add(self.applyDown, 'down')
         else:
             self.taskMgr.remove('down')
-
-
     def applyUp(self, task):
         rate = 1
         #print('applyUp')
         self.printPosHpr()
         self.modelNode.setP(self.modelNode.getP() + rate)
         return task.cont
-
     def applyDown(self, task):
         rate = 1
         #print('applyDown')
         self.printPosHpr()
         self.modelNode.setP(self.modelNode.getP() - rate)
         return task.cont
-
+    
     def printPosHpr(self):
         #print("renderPos: " + str(self.render.getPos()))
         #print("renderHPR: " + str(self.render.getHpr()))
@@ -252,33 +241,43 @@ class Player(SphereCollidableObjectVec3):
                 self.taskMgr.doMethodLater(0, self.reload, 'reload')
                 return Task.cont
         
+    def toggleFireMode(self):
+        if not self.taskMgr.hasTaskNamed('reload'): # Cannot switch while reloading
+            if self.fireMode == 'Single':
+                self.fireMode = 'Cluster'
+                print(self.fireMode)
+                self.updateHUDAmmo('Full')
+            else:
+                self.fireMode = 'Single'
+                print(self.fireMode)
+                self.updateHUDAmmo('Full')
 
     def enableHUD(self): #Used to be in MyApp before
         self.crosshair = OnscreenImage(image = "Assets/Hud/crosshair4.png", pos = Vec3(0,0,0), scale = 0.4)
         self.crosshair.setTransparency(TransparencyAttrib.MAlpha)
-        self.hud = OnscreenImage(image = "Assets/Hud/hudV2.png", pos = Vec3(0,0,0), scale = 1)
+        self.hud = OnscreenImage(image = "Assets/Hud/hudV3ExFullAmmo.png", pos = Vec3(0,0,0), scale = 1)
         self.hud.setTransparency(TransparencyAttrib.MAlpha)
 
     def updateHUDAmmo(self, ammoStr: str): #Updates the HUD to show ammo
-        if (ammoStr == "Empty"):
-            try:
-                self.hud.destroy()
-                self.hudEmpty = OnscreenImage(image = "Assets/Hud/hudV2NoAmmo.png", pos = Vec3(0,0,0), scale = 1)
-                self.hudEmpty.setTransparency(TransparencyAttrib.MAlpha)
-            except:
-                self.hudEmpty.destroy()
-                self.hudEmpty = OnscreenImage(image = "Assets/Hud/hudV2NoAmmo.png", pos = Vec3(0,0,0), scale = 1)
-                self.hudEmpty.setTransparency(TransparencyAttrib.MAlpha)
+        if (ammoStr == "Empty" and self.fireMode == 'Single'):
+            self.hud.destroy()
+            self.hud = OnscreenImage(image = "Assets/Hud/hudV3ExNoAmmo.png", pos = Vec3(0,0,0), scale = 1)
+            self.hud.setTransparency(TransparencyAttrib.MAlpha)
             
-        if (ammoStr == "Full"):
-            try:
-                self.hudEmpty.destroy()
-                self.hud = OnscreenImage(image = "Assets/Hud/hudV2.png", pos = Vec3(0,0,0), scale = 1)
-                self.hudEmpty.setTransparency(TransparencyAttrib.MAlpha)
-            except:
-                self.hud.destroy()
-                self.hud = OnscreenImage(image = "Assets/Hud/hudV2.png", pos = Vec3(0,0,0), scale = 1)
-                self.hud.setTransparency(TransparencyAttrib.MAlpha)
+        elif (ammoStr == "Full" and self.fireMode == 'Single'):
+            self.hud.destroy()
+            self.hud = OnscreenImage(image = "Assets/Hud/hudV3ExFullAmmo.png", pos = Vec3(0,0,0), scale = 1)
+            self.hud.setTransparency(TransparencyAttrib.MAlpha)
+
+        elif (ammoStr == "Empty" and self.fireMode == 'Cluster'):
+            self.hud.destroy()
+            self.hud = OnscreenImage(image = "Assets/Hud/hudV3ClstNoAmmo.png", pos = Vec3(0,0,0), scale = 1)
+            self.hud.setTransparency(TransparencyAttrib.MAlpha)
+
+        elif (ammoStr == "Full" and self.fireMode == 'Cluster'):
+            self.hud.destroy()
+            self.hud = OnscreenImage(image = "Assets/Hud/hudV3ClstFullAmmo.png", pos = Vec3(0,0,0), scale = 1)
+            self.hud.setTransparency(TransparencyAttrib.MAlpha)
 
     def handleInto(self, entry): # entry contains the collision information (name and pos of hit) also decides which objects are to be destroyed (project6)
         fromNode = entry.getFromNodePath().getName()
