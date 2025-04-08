@@ -29,7 +29,7 @@ class MyApp(ShowBase):
         self.pusher.addCollider(self.player.collisionNode, self.player.modelNode)       # adds collider to player, the from object in this scenario
         self.cTrav.addCollider(self.player.collisionNode, self.pusher)                  # allows player collider to be interacted with by other objects by pushing
         
-        #self.cTrav.showCollisions(self.render)                                         # Shows collisions when they happen
+        self.cTrav.showCollisions(self.render)                                         # Shows collisions when they happen
         
         self.player.collisionNode.reparentTo(self.player.modelNode)
         
@@ -43,18 +43,28 @@ class MyApp(ShowBase):
         for i in range(fullCycle): 
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
             self.drawCloudDefense(self.planet1, nickName)
-            
+        #print("Cloud: ", spaceJamClasses.Drone.droneCount)
+        
+        for i in range(fullCycle): 
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
             self.drawBaseballSeams(self.sun, nickName, i, fullCycle, 2)
-            
+        #print("BSB: ", spaceJamClasses.Drone.droneCount)
+        
+        for i in range(fullCycle): 
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
             self.drawCircleX(self.planet3, nickName, i, fullCycle, 2)
-            
+        #print("CX: ", spaceJamClasses.Drone.droneCount)
+        
+        for i in range(fullCycle): 
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
             self.drawCircleY(self.planet4, nickName, i, fullCycle, 2)
-            
+        #print("CY: ", spaceJamClasses.Drone.droneCount)
+        
+        for i in range(fullCycle): 
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
             self.drawCircleZ(self.planet5, nickName, i, fullCycle, 2)
+        #print("CZ: ", spaceJamClasses.Drone.droneCount)
+        #self.render.ls()
             
     def setupScene(self): ## snailCase for entire project
         self.universe = spaceJamClasses.Universe(self.loader, "Assets/Universe/Universe.x", self.render, "Universe", "Assets/Universe/Universe.jpg", (0,0,0), 50000)

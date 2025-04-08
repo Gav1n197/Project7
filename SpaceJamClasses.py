@@ -42,7 +42,7 @@ class Player(SphereCollidableObjectVec3):
         #self.modelNode.setName(nodeName)
         self.modelNode.setHpr(Hpr)
         self.fireMode = 'Single'                # Default firing mode
-        self.reloadTime = 1.00
+        self.reloadTime = 2.00
         self.missileDistance = 4000             # Time until missile explodes
         self.missileBay = 1                     # Only one missile at a time can be launched (originally)
 
@@ -355,7 +355,7 @@ class Player(SphereCollidableObjectVec3):
         self.cntExplode += 1
         tag = "particles-" + str(self.cntExplode)
 
-        self.explodeIntervals[tag] = LerpFunc(self.explodeLight, duration = 4.0) # 2.0 was 4.0, set to 2 so it wouldn't explode twice
+        self.explodeIntervals[tag] = LerpFunc(self.explodeLight, duration = 2.0) # 2.0 was 4.0, set to 2 so it wouldn't explode twice
         self.explodeIntervals[tag].start()
 
     def explodeLight(self, t):
@@ -417,7 +417,7 @@ class Planet(SphereCollidableObject):
         self.modelNode.setTexture(tex, 1)
         
 class Drone(SphereCollidableObject):
-    droneCount = 0
+    droneCount = 61 # having this number below ~30 ish makes the drones take more hits for some reason
     def __init__(self, loader: Loader, modelPath: str, parentNode: NodePath, nodeName: str, texPath: str, posVec: Vec3, scaleVec: float): # type: ignore
         super(Drone, self).__init__(loader, modelPath, parentNode, nodeName, 0, 0, 0, 4)
         #self.modelNode = loader.loadModel(modelPath)
@@ -430,7 +430,7 @@ class Drone(SphereCollidableObject):
         
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
-        print("Drone", Drone.droneCount, " created")
+        print(nodeName, " created")
         
 
 

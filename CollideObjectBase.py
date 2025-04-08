@@ -8,7 +8,7 @@ showCollide = 0 # Enables collider showing for planets, missiles, drones, and st
 class PlacedObject(PandaNode):
     def __init__(self, loader: Loader, modelPath: str, parentNode: NodePath, nodeName: str):
         self.modelNode: NodePath = loader.loadModel(modelPath)
-        #sself.modelNode.normalize()
+
         if nodeName == "Sun":
             print("Sun material added")
             sunMaterial = Material()
