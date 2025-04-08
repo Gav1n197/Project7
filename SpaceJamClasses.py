@@ -33,7 +33,6 @@ class Player(SphereCollidableObjectVec3):
         self.planet3 = planet3
         self.planet5 = planet5
         
-        
         #self.modelNode = loader.loadModel(modelPath)
         #self.modelNode.reparentTo(parentNode)
 
@@ -42,18 +41,18 @@ class Player(SphereCollidableObjectVec3):
         
         #self.modelNode.setName(nodeName)
         self.modelNode.setHpr(Hpr)
-        self.fireMode = 'Single'            # Default firing mode
+        self.fireMode = 'Single'                # Default firing mode
         self.reloadTime = 1.00
-        self.missileDistance = 4000         # Time until missile explodes
-        self.missileBay = 1                 # Only one missile at a time can be launched (originally)
+        self.missileDistance = 4000             # Time until missile explodes
+        self.missileBay = 1                     # Only one missile at a time can be launched (originally)
 
-        self.cntExplode = 0                 # Count of explosions (project6 slides)
+        self.cntExplode = 0                     # Count of explosions (project6 slides)
         self.explodeIntervals = {}
         self.traverser = traverser
         self.handler = CollisionHandlerEvent()
         self.handler.addInPattern('into')
-        self.accept('into', self.handleInto)
-
+        self.accept('into', self.handleInto)    # "into" pattern under the CollisionHandlerEvent passed in to this method for analyzation 
+                                                #   and for passing in information
         self.SetParticles()
         self.setKeyBindings()
 
@@ -247,14 +246,26 @@ class Player(SphereCollidableObjectVec3):
                 self.fireMode = 'Cluster'
                 print(self.fireMode)
                 self.updateHUDAmmo('Full')
+
+                self.crosshair.destroy()
+                self.crosshair = OnscreenImage(image = "Assets/Hud/ClusterCrosshair.png", pos = Vec3(0,0,0), scale = 0.4)
+                self.crosshair.setTransparency(TransparencyAttrib.MAlpha)
             else:
                 self.fireMode = 'Single'
                 print(self.fireMode)
                 self.updateHUDAmmo('Full')
 
+                self.crosshair.destroy()
+                self.crosshair = OnscreenImage(image = "Assets/Hud/crosshair4.png", pos = Vec3(0,0,0), scale = 0.3)
+                self.crosshair.setTransparency(TransparencyAttrib.MAlpha)
+
     def enableHUD(self): #Used to be in MyApp before
-        self.crosshair = OnscreenImage(image = "Assets/Hud/crosshair4.png", pos = Vec3(0,0,0), scale = 0.4)
+        self.controls = OnscreenImage(image = "Assets/Hud/hudControls.png", pos = Vec3(0,0,0), scale = 1.0)
+        self.controls.setTransparency(TransparencyAttrib.MAlpha)
+
+        self.crosshair = OnscreenImage(image = "Assets/Hud/crosshair4.png", pos = Vec3(0,0,0), scale = 0.3)
         self.crosshair.setTransparency(TransparencyAttrib.MAlpha)
+
         self.hud = OnscreenImage(image = "Assets/Hud/hudV3ExFullAmmo.png", pos = Vec3(0,0,0), scale = 1)
         self.hud.setTransparency(TransparencyAttrib.MAlpha)
 
@@ -279,7 +290,8 @@ class Player(SphereCollidableObjectVec3):
             self.hud = OnscreenImage(image = "Assets/Hud/hudV3ClstFullAmmo.png", pos = Vec3(0,0,0), scale = 1)
             self.hud.setTransparency(TransparencyAttrib.MAlpha)
 
-    def handleInto(self, entry): # entry contains the collision information (name and pos of hit) also decides which objects are to be destroyed (project6)
+    def handleInto(self, entry):    # entry contains the collision information (name and pos of hit) also decides which objects are to be destroyed (project6)
+                                    # entry is a search pattern under the CollisionHandler that searches for "From" and "Into" collisions and other info about those collisions
         fromNode = entry.getFromNodePath().getName()
         if printMissileInfo == 1: print("fromNode:" + fromNode)
 
@@ -307,8 +319,8 @@ class Player(SphereCollidableObjectVec3):
         strippedString = re.sub(pattern, '', victim) # replaces numbers with nothing, removes numbers from victim
         if printMissileInfo == 1: print("StrippedString: ", strippedString)
 
-        if (strippedString == "Drone" or strippedString == "Planet" or strippedString == "SpaceStation" or strippedString == "Sentinel"): #Excludes the sun and the universe
-            print(victim, ' hit at ', intoPosition)
+        if (strippedString == "Drone" or strippedString == "Planet" or strippedString == "SpaceStation" or strippedString == "Sentinel" or strippedString == "Wanderer"): #Excludes the sun and the universe
+            print(victim, ' hit at ', intoPosition, ' (', intoNode, ')')
             self.destroyObject(victim, intoPosition)
         elif(strippedString == "Sun"):
             self.explodeNode.setPos(intoPosition)
@@ -324,7 +336,7 @@ class Player(SphereCollidableObjectVec3):
 
     def destroyObject(self, hitID, hitPos):
         try:
-            nodeID = self.render.find(hitID)
+            nodeID = self.render.find("**/" + hitID + "*") #self.render.find(hitID)
             nodeID.detachNode()
             #print("nodeID found under render")
         except:
@@ -333,25 +345,8 @@ class Player(SphereCollidableObjectVec3):
                 nodeID.detachNode()
                 #print("nodeID found under sun")
             except:
-                try:
-                    nodeID = self.planet1.modelNode.find(hitID)
-                    nodeID.detachNode()
-                    #print("nodeID found under planet1")
-                except:
-                    try:
-                        nodeID = self.planet3.modelNode.find(hitID)
-                        nodeID.detachNode()
-                        #print("nodeID found under planet3")
-                    except:
-                        try:
-                            nodeID = self.planet5.modelNode.find(hitID)
-                            nodeID.detachNode()
-                            #print("nodeID found under planet5")
-                        except:
-                            print("No nodeID found")
+                print("No nodeID found")
         #
-
-            
         
         self.explodeNode.setPos(hitPos)
         self.explode()
@@ -422,8 +417,9 @@ class Planet(SphereCollidableObject):
         self.modelNode.setTexture(tex, 1)
         
 class Drone(SphereCollidableObject):
+    droneCount = 0
     def __init__(self, loader: Loader, modelPath: str, parentNode: NodePath, nodeName: str, texPath: str, posVec: Vec3, scaleVec: float): # type: ignore
-        super(Drone, self).__init__(loader, modelPath, parentNode, nodeName, 0, 0, 0, 2)
+        super(Drone, self).__init__(loader, modelPath, parentNode, nodeName, 0, 0, 0, 4)
         #self.modelNode = loader.loadModel(modelPath)
         #self.modelNode.reparentTo(parentNode)
 
@@ -434,7 +430,9 @@ class Drone(SphereCollidableObject):
         
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
-    droneCount = 1
+        print("Drone", Drone.droneCount, " created")
+        
+
 
 class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that moves around an object (project7)
     numOrbits = 0                       # Used for naming each sentinel's orbit
@@ -531,18 +529,35 @@ class Wanderer(SphereCollidableObjectVec3):
         self.modelNode.setTexture(tex, 1)
         self.staringAt = staringAt
         Wanderer.numWanderers += 1
-        print(Wanderer.numWanderers)
+        #self.modelName = modelName #+ str(Drone.droneCount)
+        #Drone.droneCount += 1
+        #print(self.modelName)
 
-        if Wanderer.numWanderers == 1:
-            self.defineRoute(Vec3(0,1000,700), Vec3(-360, 5500, 2390), Vec3(-2500, 6000, 1470), Vec3(-2300, 5800, 770))
-            ## Sun > Planet1 > Planet 3 > Planet 4
-        if Wanderer.numWanderers == 2:
-            self.defineRoute(Vec3(0,1000,700), Vec3(2600, -5600, 700), Vec3(-2700, -5700, 700), Vec3(-2250, 5800, 770))
-            ## Sun > Planet 5 > Planet 6 > Planet 4
+        if Wanderer.numWanderers == 1: # Leader of route 1
+            self.defineRoute(Vec3(1, 1, 2), Vec3(-5, -10, 2), Vec3(0, -20, 2), Vec3(10, -20, 1))
+            #self.defineRoute(Vec3(0.1, 0, 2), Vec3(0.1, 0, 2), Vec3(0.1, 0, 2), Vec3(0.1, 0, 2))
+
+        elif Wanderer.numWanderers == 2: # Follower of route 1
+            self.defineRoute(Vec3(1, 1.25, 2.25), Vec3(-5, -9.75, 2.25), Vec3(0, -19.75, 2.25), Vec3(10, -19.75, 1.25))
+            #self.defineRoute(Vec3(0.2, 0, 2), Vec3(0.2, 0, 2), Vec3(0.2, 0, 2), Vec3(0.2, 0, 2))
+
+
+        elif Wanderer.numWanderers == 3: # Leader of route 2
+            self.defineRoute(Vec3(0, 0, 2), Vec3(5, 10, 2), Vec3(0, 20, 2), Vec3(-10, 20, 1))
+            #self.defineRoute(Vec3(0.3, 0, 2), Vec3(0.3, 0, 2), Vec3(0.3, 0, 2), Vec3(0.3, 0, 2))
+
+            
+        elif Wanderer.numWanderers == 4: # Follower of route 2
+            self.defineRoute(Vec3(0, -0.25, 1.75), Vec3(5, 9.75, 1.75), Vec3(0, 19.75, 1.75), Vec3(-10, 19.75, 0.75))
+            #self.defineRoute(Vec3(0.4, 0, 2), Vec3(0.4, 0, 2), Vec3(0.4, 0, 2), Vec3(0.4, 0, 2))
+
+        else:
+            print("Not enough routes specified for the number of wanderers spawned")
+
         try:
             self.travelRoute.loop()
         except:
-            print("No travelRoute defined for wanderer " + Wanderer.numWanderers)
+            print("No travelRoute defined for wanderer", Wanderer.numWanderers)
 
     def defineRoute(self, originPos, pos1, pos2, pos3):
             self.posInterval0 = self.modelNode.posInterval(self.speed, pos1, startPos = originPos)

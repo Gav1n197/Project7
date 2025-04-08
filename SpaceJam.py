@@ -1,4 +1,4 @@
-## Project8 4/3/25 3DGameEngineConcepts
+## Project8 4/8/25 3DGameEngineConcepts
 ## Comments on column 89
 ## All file names and folder names are capitalized (Assets/Planets/Textures/WhitePlanet.png)
 
@@ -28,7 +28,9 @@ class MyApp(ShowBase):
 
         self.pusher.addCollider(self.player.collisionNode, self.player.modelNode)       # adds collider to player, the from object in this scenario
         self.cTrav.addCollider(self.player.collisionNode, self.pusher)                  # allows player collider to be interacted with by other objects by pushing
-        self.cTrav.showCollisions(self.render)
+        
+        #self.cTrav.showCollisions(self.render)                                         # Shows collisions when they happen
+        
         self.player.collisionNode.reparentTo(self.player.modelNode)
         
         self.accept('r', self.changeRotations)
@@ -38,38 +40,37 @@ class MyApp(ShowBase):
         #self.render.ls() ##Lists off the final version of the scene graph before making all of the drones
 
         fullCycle = 60               ## Change this to load faster
-        for i in range(fullCycle):
-            spaceJamClasses.Drone.droneCount += 1
+        for i in range(fullCycle): 
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
             self.drawCloudDefense(self.planet1, nickName)
-
+            
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
-            self.drawBaseballSeams(self.sun, nickName, i, fullCycle, 3)
-
+            self.drawBaseballSeams(self.sun, nickName, i, fullCycle, 2)
+            
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
             self.drawCircleX(self.planet3, nickName, i, fullCycle, 2)
-
+            
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
             self.drawCircleY(self.planet4, nickName, i, fullCycle, 2)
-
+            
             nickName = "Drone" + str(spaceJamClasses.Drone.droneCount)  ##Concantenation of nicknames for each drone made
             self.drawCircleZ(self.planet5, nickName, i, fullCycle, 2)
             
     def setupScene(self): ## snailCase for entire project
-        self.universe = spaceJamClasses.Universe(self.loader, "Assets/Universe/Universe.x", self.render, "Universe", "Assets/Universe/Universe.jpg", (0,0,0), 14000)
+        self.universe = spaceJamClasses.Universe(self.loader, "Assets/Universe/Universe.x", self.render, "Universe", "Assets/Universe/Universe.jpg", (0,0,0), 50000)
 
-        self.sun     = spaceJamClasses.Sun(self.loader, "Assets/Planets/protoPlanet.x", self.render, "Sun", "Assets/Planets/Textures/Sun.jpg",            0,  0,   0,  400, self.render) 
+        self.sun     = spaceJamClasses.Sun(self.loader, "Assets/Planets/protoPlanet.x", self.render, "Sun", "Assets/Planets/Textures/Sun.jpg",            0,  5000,   -1000,  400, self.render) 
         self.planet1 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet1", "Assets/Planets/Textures/Mercury.jpg",        10,   0, 0, 1) 
         self.planet2 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet2", "Assets/Planets/Textures/Moon.jpg",           -5,   -3, 0, 0.3)
         self.planet3 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet3", "Assets/Planets/Textures/WhitePlanet.jpg",   -10,  0, 0, 0.6) 
         self.planet4 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet4", "Assets/Planets/Textures/Neptune.jpg",       10,  -15, 0,  0.4) 
-        self.planet5 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet5", "Assets/Planets/Textures/Venus.jpg",          10, 10, 2,  1)
+        self.planet5 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet5", "Assets/Planets/Textures/Venus.jpg",          10, 10, -2,  1)
         self.planet6 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet6", "Assets/Planets/Textures/GreyPlanet.jpg",    20, 5, 0,  1) 
     
         self.planets = [self.sun, self.planet1, self.planet2, self.planet3, self.planet4, self.planet5, self.planet6]
 
         self.spaceStation1 = spaceJamClasses.SpaceStation(self.loader, "Assets/SpaceStation/SpaceStation1B/spaceStation.x", self.render, "SpaceStation1", "Assets/SpaceStation/SpaceStation1B/SpaceStation1_Dif2.png", (500, -570, 0), 5) 
-        #self.spaceStation2 = spaceJamClasses.SpaceStation(self.loader, "Assets/SpaceStation/SpaceStation1B/spaceStation.x", self.render, "SpaceStation2", "Assets/SpaceStation/SpaceStation1B/SpaceStation1_Dif2.png", (740, 0, 0), 6) 
+        #self.spaceStation2 = spaceJamClasses.SpaceStation(self.loader, "Assets/SpaceStation/SpaceStation1B/spaceStation.x", self.planet1.modelNode, "SpaceStation2", "Assets/SpaceStation/SpaceStation1B/SpaceStation1_Dif2.png", (2, 2, 2), 0.02) 
 
         self.player = spaceJamClasses.Player(self.loader, self.taskMgr, self.accept, "Assets/Spaceships/Dumbledore/Dumbledore.x", self.render, "Player", (0, 0, 0), 1, (0, 0, 0), self.render, self.cTrav, 
                                              self.sun, self.planet1, self.planet3, self.planet5)
@@ -84,8 +85,11 @@ class MyApp(ShowBase):
         self.sentinel4 = spaceJamClasses.Orbiter(self.loader, self.taskMgr, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, "Sentinel4", 0.02, "Assets/DroneDefender/octotoad1_auv.png", 
                                                  self.planet6, 12, "Cloud", self.player)
         
-        #self.wanderer1 = spaceJamClasses.Wanderer(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.render, "Drone", 6.0, "Assets/DroneDefender/octotoad1_auv.png", self.player, 10)
-        #self.wanderer2 = spaceJamClasses.Wanderer(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.render, "Drone", 6.0, "Assets/DroneDefender/octotoad1_auv.png", self.player, 10)
+        self.wanderer1 = spaceJamClasses.Wanderer(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, "Wanderer1", 0.02, "Assets/DroneDefender/octotoad1_auv.png", self.player, 8)
+        self.wanderer2 = spaceJamClasses.Wanderer(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, "Wanderer2", 0.02, "Assets/DroneDefender/octotoad1_auv.png", self.player, 8)
+        
+        self.wanderer3 = spaceJamClasses.Wanderer(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, "Wanderer3", 0.02, "Assets/DroneDefender/octotoad1_auv.png", self.player, 8)
+        self.wanderer4 = spaceJamClasses.Wanderer(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, "Wanderer4", 0.02, "Assets/DroneDefender/octotoad1_auv.png", self.player, 8)
     
     def setRotations(self, task):
         if self.rotationIndex > len(self.planets) - 1:
@@ -139,7 +143,7 @@ class MyApp(ShowBase):
     def drawCloudDefense(self, centralObject, droneName):
         unitVec = defensePaths.Cloud()
         unitVec.normalize()
-        position = unitVec * 250 + centralObject.modelNode.getPos()
+        position = unitVec * 2.5 + centralObject.modelNode.getPos()
         spaceJamClasses.Drone(self.loader, "Assets/DroneDefender/DroneDefender.obj", self.sun.modelNode, droneName, "Assets/DroneDefender/octotoad1_auv.png", position, 0.02)
         spaceJamClasses.Drone.droneCount += 1
     
