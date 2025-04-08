@@ -29,7 +29,7 @@ class MyApp(ShowBase):
         self.pusher.addCollider(self.player.collisionNode, self.player.modelNode)       # adds collider to player, the from object in this scenario
         self.cTrav.addCollider(self.player.collisionNode, self.pusher)                  # allows player collider to be interacted with by other objects by pushing
         
-        self.cTrav.showCollisions(self.render)                                         # Shows collisions when they happen
+        #self.cTrav.showCollisions(self.render)                                         # Shows collisions when they happen
         
         self.player.collisionNode.reparentTo(self.player.modelNode)
         
@@ -37,7 +37,7 @@ class MyApp(ShowBase):
         #self.accept('2', self.pauseRotations)
         #self.accept('1-up', self.changeRotations)  
 
-        #self.render.ls() ##Lists off the final version of the scene graph before making all of the drones
+        self.render.ls() ##Lists off the final version of the scene graph before making all of the drones
 
         fullCycle = 60               ## Change this to load faster
         for i in range(fullCycle): 
@@ -70,9 +70,9 @@ class MyApp(ShowBase):
         self.universe = spaceJamClasses.Universe(self.loader, "Assets/Universe/Universe.x", self.render, "Universe", "Assets/Universe/Universe.jpg", (0,0,0), 50000)
 
         self.sun     = spaceJamClasses.Sun(self.loader, "Assets/Planets/protoPlanet.x", self.render, "Sun", "Assets/Planets/Textures/Sun.jpg",            0,  5000,   -1000,  400, self.render) 
-        self.planet1 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet1", "Assets/Planets/Textures/Mercury.jpg",        10,   0, 0, 1) 
+        self.planet1 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet1", "Assets/Planets/Textures/Mercury.jpg",        20,   -10, 0, 1) 
         self.planet2 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet2", "Assets/Planets/Textures/Moon.jpg",           -5,   -3, 0, 0.3)
-        self.planet3 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet3", "Assets/Planets/Textures/WhitePlanet.jpg",   -10,  0, 0, 0.6) 
+        self.planet3 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet3", "Assets/Planets/Textures/WhitePlanet.jpg",   -15,  10, 0, 0.6) 
         self.planet4 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet4", "Assets/Planets/Textures/Neptune.jpg",       10,  -15, 0,  0.4) 
         self.planet5 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet5", "Assets/Planets/Textures/Venus.jpg",          10, 10, -2,  1)
         self.planet6 = spaceJamClasses.Planet(self.loader, "Assets/Planets/protoPlanet.x", self.sun.modelNode, "Planet6", "Assets/Planets/Textures/GreyPlanet.jpg",    20, 5, 0,  1) 

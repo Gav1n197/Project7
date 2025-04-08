@@ -1,3 +1,4 @@
+import math
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import *
 from direct.interval.IntervalGlobal import Sequence
@@ -320,7 +321,7 @@ class Player(SphereCollidableObjectVec3):
         if printMissileInfo == 1: print("StrippedString: ", strippedString)
 
         if (strippedString == "Drone" or strippedString == "Planet" or strippedString == "SpaceStation" or strippedString == "Sentinel" or strippedString == "Wanderer"): #Excludes the sun and the universe
-            print(victim, ' hit at ', intoPosition, ' (', intoNode, ')')
+            if printMissileInfo == 1: print(victim, ' hit at ', intoPosition, ' (', intoNode, ')')
             self.destroyObject(victim, intoPosition)
         elif(strippedString == "Sun"):
             self.explodeNode.setPos(intoPosition)
@@ -331,12 +332,15 @@ class Player(SphereCollidableObjectVec3):
             self.explode()
             Missile.Intervals[shooter].finish()
         
-        if printMissileInfo == 1: print(shooter + " is destroyed")
-        Missile.Intervals[shooter].finish()
+        try:
+            if printMissileInfo == 0: print(shooter + " is destroyed")
+            Missile.Intervals[shooter].finish()
+        except:
+            print("Multiple different targets hit at once, known bug occured")
 
     def destroyObject(self, hitID, hitPos):
         try:
-            nodeID = self.render.find("**/" + hitID + "*") #self.render.find(hitID)
+            nodeID = self.render.find("**/" + hitID + "*") # used to be self.render.find(hitID)
             nodeID.detachNode()
             #print("nodeID found under render")
         except:
@@ -359,19 +363,45 @@ class Player(SphereCollidableObjectVec3):
         self.explodeIntervals[tag].start()
 
     def explodeLight(self, t):
-        if t == 1.0 and self.explodeEffect:
-            self.explodeEffect.disable()
+        #for i in range(len(self.explodeEffect)):
+        if (t == 1.0) and self.fireMode == 'Single':
+            self.explodeEffect[0].disable()
 
-        elif t == 0:
-            self.explodeEffect.start(self.explodeNode)
+        elif (t == 1.0) and self.fireMode == 'Cluster':
+            if self.explodeEffect[0]: self.explodeEffect[0].disable()
+            if self.explodeEffect[1]: self.explodeEffect[1].disable()
+            if self.explodeEffect[2]: self.explodeEffect[2].disable()
+
+        elif t == 0 and self.fireMode == 'Single':
+            self.explodeEffect[0].start(self.explodeNode)
+        
+        elif t == 0 and self.fireMode == 'Cluster':
+            self.explodeEffect[0].start(self.explodeNode)
+            self.explodeEffect[1].start(self.explodeNode)
+            self.explodeEffect[2].start(self.explodeNode)
     
     def SetParticles(self):
         base.enableParticles() # type: ignore
-        self.explodeEffect = ParticleEffect()
-        self.explodeEffect.loadConfig("Assets/ParticleEffects/basic_xpld_efx2.ptf")
-        self.explodeEffect.setScale(50)
-        #print(self.explodeEffect.getParticlesList())
+        
+        explodeEffect1 = ParticleEffect()
+        explodeEffect2 = ParticleEffect()
+        explodeEffect3 = ParticleEffect()
+        self.explodeEffect = [explodeEffect1, explodeEffect2, explodeEffect3]
         self.explodeNode = self.render.attachNewNode('ExplosionEffects')
+        for i in range(len(self.explodeEffect)):
+            self.explodeEffect[i].loadConfig("Assets/ParticleEffects/basic_xpld_efx.ptf")
+            self.explodeEffect[i].setScale(50)
+            particleMat = Material()
+            particleMat.setEmission((1, 1, 1, 1))
+            self.explodeEffect[i].setMaterial(particleMat, 1)
+            if i == 0:
+                self.explodeEffect[i].setPos(0,0,0)
+            else:
+                self.explodeEffect[i].setPos(defensePaths.Cloud(35))
+            print(self.explodeEffect[i].getParticlesList())
+            #self.explodeEffect[i].reparentTo(self.explodeNode)
+        
+
 
 class Universe(InverseSphereCollideObject):
     def __init__(self, loader: Loader, modelPath: str, parentNode: NodePath, nodeName: str, texPath: str, posVec: Vec3, scaleVec: float):
@@ -430,9 +460,7 @@ class Drone(SphereCollidableObject):
         
         tex = loader.loadTexture(texPath)
         self.modelNode.setTexture(tex, 1)
-        print(nodeName, " created")
-        
-
+        #print(nodeName, " created")
 
 class Orbiter(SphereCollidableObjectVec3):  # Orbiter is a type of drone that moves around an object (project7)
     numOrbits = 0                       # Used for naming each sentinel's orbit

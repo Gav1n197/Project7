@@ -12,13 +12,14 @@ class PlacedObject(PandaNode):
         if nodeName == "Sun":
             print("Sun material added")
             sunMaterial = Material()
-            sunMaterial.setAmbient((0.88, 0.48, 0.11, 1)) 
-            sunMaterial.setDiffuse((0.88, 0.48, 0.11, 1)) 
+            #sunMaterial.setAmbient((0.88, 0.48, 0.11, 1)) 
+            #sunMaterial.setDiffuse((0.88, 0.48, 0.11, 1)) 
             sunMaterial.setEmission((0.88, 0.48, 0.11, 1)) 
-            sunMaterial.setSpecular((0.88, 0.48, 0.11, 1)) 
+            #sunMaterial.setSpecular((0.88, 0.48, 0.11, 1)) 
             self.modelNode.setMaterial(sunMaterial, 1) #NEEDS the 1 afterward
         else:
             material = Material()
+            #material.setEmission((0.88, 0.48, 0.11, 1)) 
             self.modelNode.setMaterial(material, 1)
 
 
